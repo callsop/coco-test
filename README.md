@@ -20,9 +20,9 @@ ToDo: Test how often the wait loop while interrupts active in test #3 continue l
 | Machine | Version | #1 | #2 | #3 |
 | -------- | ------- | -- | -- | -- |
 | CoCo 3   | -   |  <green>Pass :heavy_check_mark:</green> | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = CA00008E |
-| MAME     | 0277b   |  <green>Pass :heavy_check_mark:</green> | Pass :heavy_check_mark: | Pass :heavy_check_mark: |
-| xroar    | 1.5     |  Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = B10000A7 |
-| xroar    | 1.8.1   |  Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = B00000A8 |
+| MAME coco3 | 0277b   |  <green>Pass :heavy_check_mark:</green> | Pass :heavy_check_mark: | Pass :heavy_check_mark: |
+| xroar coco3p | 1.5     |  Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = B10000A7 |
+| xroar coco3p | 1.8.1   |  Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = BD00009B |
 | VCC      | <2.1.9.1 |   No :x: |  No :x: |  No :x: Tally = 510000DB| 
 | VCC      | 2.1.9.2 | Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = 980000C0 | 
 | Coco3FPGA  | :grey_question: | :grey_question: | :grey_question: | :grey_question: | 

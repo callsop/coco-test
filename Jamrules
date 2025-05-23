@@ -228,5 +228,5 @@ rule XRoar target : binary : disk : disk2
 
 actions ignore XRoar bind DISK DISK2
 {
-    $(XROAR) -m coco -tv-type ntsc -gdb -joy-right mjoy0 -load-fd0$(SPACE)$(DISK) -load-fd1$(SPACE)$(DISK2) -run $(>)
+    $(XROAR) -m coco3p -tv-type ntsc -gdb -joy-right mjoy0 -load-fd0$(SPACE)$(DISK) -load-fd1$(SPACE)$(DISK2) -run $(>)
 }
