@@ -1,0 +1,20 @@
+
+SubDir coco-test ;
+
+disk = [ FDirName $(TOP) itest.dsk ] ;
+
+ASM = [ Glob $(SUBDIR) : *.asm ] ;
+
+TARGETS = i1.asm i2.asm i3.asm ;
+
+DEPS = $(DEP:S=.asm) ;
+
+for t in $(TARGETS:BS)
+{
+	local out = [ Assembly $(t) ] ;
+	Run $(out) : $(disk) : $(files:U) : $(disk2) ;
+    Depends $(out) : $(DEPS) ;
+    LOCATE on $(DEPS) = $(SUBDIR) ;
+}
+
+DecbCopyAll $(disk) : $(ASM) ;
