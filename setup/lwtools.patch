@@ -1,0 +1,24 @@
+diff --git a/lwasm/symbol.c b/lwasm/symbol.c
+index dfd3ad3..fefc74a 100644
+--- a/lwasm/symbol.c
++++ b/lwasm/symbol.c
+@@ -106,6 +106,9 @@ struct symtabe *register_symbol(asmstate_t *as, line_t *cl, char *sym, lw_expr_t
+ 		}
+ 	}
+ 
++	if (*sym == '.')
++		islocal = 1;
++
+ 	for (cp = sym; *cp; cp++)
+ 	{
+ 		if (*cp == '@' || *cp == '?')
+@@ -254,6 +257,9 @@ struct symtabe * lookup_symbol(asmstate_t *as, line_t *cl, char *sym)
+ 	int cdir;
+ 
+ 	debug_message(as, 100, "Look up symbol %s", sym);
++
++	if (*sym == '.')
++		local = 1;
+ 	
+ 	// check if this is a local symbol
+ 	if (strchr(sym, '@') || strchr(sym, '?'))

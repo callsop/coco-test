@@ -1,6 +1,6 @@
 # Whitespace around ; is significant in Jam so watch out.
 
-SPACE			= " " ;
+SPACE				= " " ;
 
 if $(OS) = NT
 {
@@ -9,27 +9,30 @@ if $(OS) = NT
 
 	# tool paths
 	LWTOOLS_PATH	= [ FDirName $(TOOL_PATH) lwtools-4.24c ] ;
-	TOOLSHED_PATH	= [ FDirName $(TOOL_PATH) toolshed-2.2 ] ;
+	TOOLSHED_PATH	= [ FDirName $(TOOL_PATH) toolshed-2.4 ] ;
 	VCC_PATH		= [ FDirName $(TOOL_PATH) vcc-2.1.9.1 ] ;
 	XROAR_PATH		= [ FDirName $(TOOL_PATH) xroar-1.8.1 ] ;
 }
 else
 {
-	TOOL_PATH	= [ FDirName / usr local bin ] ;
+	TOOL_PATH		= [ FDirName usr local bin ] ;
+	TOOL_PATH		= /$(TOOL_PATH) ;
 
-	# tool paths
+	# tools assumed to be in /usr/local/bin
 	LWTOOLS_PATH	= $(TOOL_PATH) ;
-	TOOLSHED_PATH	= [ FDirName ~ toolshed-2.2 ] ;
-	VCC_PATH		= ;
+	TOOLSHED_PATH	= $(TOOL_PATH) ;
+	VCC_PATH		= $(TOOL_PATH) ;
 	XROAR_PATH		= $(TOOL_PATH) ;
+
+	#JAMSHELL ?= bash -c % ;
 }
 
 
 # tools
-DECB			= [ FDirName $(TOOLSHED_PATH) decb$(SUFEXE) ] ;
-VCC				= [ FDirName $(VCC_PATH) vcc$(SUFEXE) ] ;
-XROAR       	= [ FDirName $(XROAR_PATH) xroar$(SUFEXE) ] ;
-LWASM			= [ FDirName $(LWTOOLS_PATH) lwasm$(SUFEXE) ] ;
+DECB				= [ FDirName $(TOOLSHED_PATH) decb$(SUFEXE) ] ;
+VCC					= [ FDirName $(VCC_PATH) vcc$(SUFEXE) ] ;
+XROAR       		= [ FDirName $(XROAR_PATH) xroar$(SUFEXE) ] ;
+LWASM				= [ FDirName $(LWTOOLS_PATH) lwasm$(SUFEXE) ] ;
 
 # shorthands
 SHORT on xroar 	= x ;
@@ -41,37 +44,37 @@ SHORT on vcc 	= v ;
 #
 rule Exists
 {
-    local p = <checked>$(<:P) ;
+	local p = <checked>$(<:P) ;
 
-    if $(VERBOSE) >= 5
-    {
-        Echo $(p) ;
-    }
+	if $(VERBOSE) >= 5
+	{
+		Echo $(p) ;
+	}
 
-    if ! $($(p))
-    {
-        local files = [ Glob $(<:P) : * ] ;
-        $(p) = $(files:BS) ;
-    }
+	if ! $($(p))
+	{
+		local files = [ Glob $(<:P) : * ] ;
+		$(p) = $(files:BS) ;
+	}
 
-    if $(<:BS) in $($(p))
-    {
-        if $(VERBOSE) >= 5
-        {
-            Echo Found $(<:BS) ;
-        }
-        return 1 ;
-    }
+	if $(<:BS) in $($(p))
+	{
+		if $(VERBOSE) >= 5
+		{
+			Echo Found $(<:BS) ;
+		}
+		return 1 ;
+	}
 
-    return ;
+	return ;
 }
 
-if ! [ Exists $(TOOLSHED) ]
+if ! [ Exists $(DECB) ]
 {
 	Echo toolshed not found at path: $(TOOLSHED_PATH) ;
 }
 
-if ! [ Exists $(LWTOOLS) ]
+if ! [ Exists $(LWASM) ]
 {
 	Echo lwtools not found at path: $(LWTOOLS_PATH) ;
 }
@@ -102,10 +105,10 @@ if $(VERBOSE) > 1
 rule Assembly
 {
 	local target = $(<:US=.BIN) ;
-    local listing = $(<:US=.LST) ;
-    MakeLocate $(listing) : $(LOCATE_TARGET) ;
+	local listing = $(<:US=.LST) ;
+	MakeLocate $(listing) : $(LOCATE_TARGET) ;
 	Assemble $(target) : $(<) ;
-    NoCare $(listing) ;
+	NoCare $(listing) ;
 	LISTING on $(target) = $(listing) ;
 	Clean clean : $(listing) ;
 	return $(target) ;
@@ -113,7 +116,7 @@ rule Assembly
 
 rule Assemble
 {
-    MakeLocate $(<) : $(LOCATE_TARGET) ;
+	MakeLocate $(<) : $(LOCATE_TARGET) ;
 	Depends $(<) : $(>) ;
 	Clean clean : $(<) ;
 	Depends asm : $(<) ;
@@ -139,16 +142,16 @@ rule Decb
 
 actions Decb
 {
-	$(DECB) copy -2 -b $(>:U) -r $(<),$(>:U)
+	$(DECB) copy -2 -b $(>) -r $(<),$(>:U)
 }
 
 rule DecbCopyAll disk : files
 {
 	local file ;
-    for file in $(files:BS)
-    {
-        DecbCopy $(disk) : $(file) ;
-    }
+	for file in $(files:BS)
+	{
+		DecbCopy $(disk) : $(file) ;
+	}
 }
 
 rule MakeDisk disk
@@ -191,7 +194,7 @@ rule Run binary : disk : extrafiles : disk2
 	MakeLocate $(disk) : $(LOCATE_TARGET) ;
 	MakeDisk $(disk) ;
 
-    DecbCopyAll $(disk) : $(binary) $(extrafiles) ;
+	DecbCopyAll $(disk) : $(binary) $(extrafiles) ;
 
 	RunTool Vcc : $(binary) : $(disk) : $(disk2) ;
 	RunTool XRoar : $(binary) : $(disk) : $(disk2) ;
@@ -212,21 +215,56 @@ actions ignore Vcc
 
 rule XRoar target : binary : disk : disk2
 {
-    DISK on $(target) = $(disk) ;
-    Depends $(target) : $(disk) ;
-    if $(disk2)
-    {
-        DISK2 on $(target) = $(disk2) ;
-        Depends $(target) : $(disk2) ;
-    }
+	DISK on $(target) = $(disk) ;
+	Depends $(target) : $(disk) ;
+	if $(disk2)
+	{
+		DISK2 on $(target) = $(disk2) ;
+		Depends $(target) : $(disk2) ;
+	}
 
-    Depends $(target) : $(disk) ;
-    NotFile $(target) ;
-    Always $(target) ;
+	Depends $(target) : $(disk) ;
+	NotFile $(target) ;
+	Always $(target) ;
 	XROAR on $(<) = $(XROAR) ;
 }
 
 actions ignore XRoar bind DISK DISK2
 {
-    $(XROAR) -m coco3p -tv-type ntsc -gdb -joy-right mjoy0 -load-fd0$(SPACE)$(DISK) -load-fd1$(SPACE)$(DISK2) -run $(>)
+	$(XROAR) -m coco3p -tv-type ntsc -gdb -joy-right mjoy0 -load-fd0$(SPACE)$(DISK) -load-fd1$(SPACE)$(DISK2) -run $(>)
 }
+
+rule Ball
+{
+	NotFile balls ;
+	Depends balls : $(<) ;
+	Depends $(<) : $(>) ;
+	switch $(<) 
+	{
+		case *.tgz : Tarz $(<) : $(>) ;
+		case *.shar : Shar $(<) : $(>) ;
+		case *.zip : Zip $(<) : $(>) ;
+	}
+}
+
+actions Tarz
+{
+	tar czvhf $(<) --transform 's,^,$(VERSION)/,' $(>)
+}
+
+actions Tar
+{
+	tar cvhf $(<) --transform 's,^,$(VERSION)/,' $(>)
+}
+
+actions Shar
+{
+	shar $(>) > $(<)
+}
+
+actions Zip
+{
+	zip $(<) $(>) 
+}
+
+
