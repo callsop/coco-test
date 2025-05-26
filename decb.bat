@@ -1,1 +1,1 @@
-c:\Programs\toolshed-2.2\decb.exe %*
+c:\Programs\toolshed-2.4\decb.exe %*

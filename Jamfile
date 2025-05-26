@@ -1,7 +1,7 @@
 
 SubDir coco-test ;
 
-disk = [ FDirName $(TOP) itest.dsk ] ;
+disk = [ FDirName $(TOP) craigtst.dsk ] ;
 
 ASM = [ Glob $(SUBDIR) : *.asm ] ;
 
@@ -13,8 +13,13 @@ for t in $(TARGETS:BS)
 {
 	local out = [ Assembly $(t) ] ;
 	Run $(out) : $(disk) : $(files:U) : $(disk2) ;
-    Depends $(out) : $(DEPS) ;
-    LOCATE on $(DEPS) = $(SUBDIR) ;
+	Depends $(out) : $(DEPS) ;
+	LOCATE on $(DEPS) = $(SUBDIR) ;
 }
 
-DecbCopyAll $(disk) : $(ASM) ;
+TAG ?= v0.0 ;
+VERSION = craigtst-$(TAG) ;
+
+Ball $(VERSION).tgz : $(disk) ;
+
+

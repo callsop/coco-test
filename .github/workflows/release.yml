@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: .
+
+permissions:
+  contents: write
+
+defaults:
+    run:
+        shell: bash {0}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Requirements
+      run: |
+        sudo apt-get install jam
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Fetch Toolshed
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: nitros9project/toolshed
+        fileName: toolshed-*.tgz
+        latest: true
+        extract: false
+        out-file-path: toolshed
+
+    - name: Install Toolshed
+      run: |
+        sudo tar xvf toolshed/toolshed-[0-9]*.*.tgz --strip-components=1 -C /usr/local/bin
+        sudo ln -s /bin/bash /usr/local/bin/xroar
+
+    - name: Install Lwtools
+      run: |
+        sudo bash ./setup/lwtools.sh
+
+    - name: Build 
+      run: |
+        tag=$(git describe --tags --abbrev=0)
+        jam -sTAG=$tag balls
+
+    - name: Display structure of downloaded files
+      run: ls -al
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: "craigtst-*.tgz"
+
+
