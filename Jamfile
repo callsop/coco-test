@@ -1,7 +1,7 @@
 
 SubDir coco-test ;
 
-disk = [ FDirName $(TOP) craigtst.dsk ] ;
+disk = [ FDirName $(SUBDIR) craigtst.dsk ] ;
 
 ASM = [ Glob $(SUBDIR) : *.asm ] ;
 
