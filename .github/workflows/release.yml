@@ -32,14 +32,14 @@ jobs:
       uses: robinraju/release-downloader@v1
       with:
         repository: nitros9project/toolshed
-        fileName: toolshed-*.tgz
+        fileName: toolshed-unix*.tgz
         latest: true
         extract: false
         out-file-path: toolshed
 
     - name: Install Toolshed
       run: |
-        sudo tar xvf toolshed/toolshed-[0-9]*.*.tgz --strip-components=1 -C /usr/local/bin
+        sudo tar xvf toolshed/toolshed-unix*.tgz --strip-components=1 -C /usr/local/bin
         sudo ln -s /bin/bash /usr/local/bin/xroar
 
     - name: Install Lwtools
@@ -55,10 +55,11 @@ jobs:
       run: ls -al
 
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: "craigtst-*.tgz"
+        files: |
+          craigtst-*.tgz
 
 

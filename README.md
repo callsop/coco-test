@@ -50,7 +50,7 @@ To build the dsk image require some tools...
 ### Requirements
 
 - [Jam 2.6.1](https://github.com/callsop/perforce-jam)
-- [Toolshed 2.4](https://github.com/nitros9project/toolshed)
+- [Toolshed 2.4.1](https://github.com/nitros9project/toolshed)
 - [Lwtools 4.24](http://www.lwtools.ca)
 
 #### Linux
@@ -71,8 +71,8 @@ Jam 2.6.1 is here: https://github.com/callsop/perforce-jam/releases/tag/v2.6.1 j
 
 ```
 $ jam dsk
-...found 18 target(s)...
-...updating 5 target(s)...
+...found 10 target(s)...
+...updating 4 target(s)...
 Assemble I1.BIN
 Assemble I2.BIN
 Assemble I3.BIN
@@ -80,16 +80,7 @@ MakeDisk1 craigtst.dsk
 Decb craigtst.dsk
 Decb craigtst.dsk
 Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-Decb craigtst.dsk
-...updated 5 target(s)...
+...updated 4 target(s)...
 ```
 
 ### Clean

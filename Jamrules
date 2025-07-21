@@ -9,7 +9,7 @@ if $(OS) = NT
 
 	# tool paths
 	LWTOOLS_PATH	= [ FDirName $(TOOL_PATH) lwtools-4.24c ] ;
-	TOOLSHED_PATH	= [ FDirName $(TOOL_PATH) toolshed-2.4 ] ;
+	TOOLSHED_PATH	= [ FDirName $(TOOL_PATH) toolshed-2.4.1 ] ;
 	VCC_PATH		= [ FDirName $(TOOL_PATH) vcc-2.1.9.1 ] ;
 	XROAR_PATH		= [ FDirName $(TOOL_PATH) xroar-1.8.1 ] ;
 }
