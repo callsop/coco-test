@@ -50,7 +50,7 @@ To build the dsk image require some tools...
 ### Requirements
 
 - [Jam 2.6.1](https://github.com/callsop/perforce-jam)
-- [Toolshed 2.4.1](https://github.com/nitros9project/toolshed)
+- [Toolshed 2.4.2](https://github.com/nitros9project/toolshed)
 - [Lwtools 4.24](http://www.lwtools.ca)
 
 #### Linux
