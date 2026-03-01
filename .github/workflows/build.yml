@@ -33,6 +33,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Cache LwTools
+      id: cache-lwtools
+      uses: actions/cache@v5
+      env:
+        cache-name: cache-lwtools
+      with:
+        path: /usr/local/bin/lw*
+        key: lwtools-4.24      
+
     - name: Fetch Toolshed
       uses: robinraju/release-downloader@v1
       with:
@@ -47,7 +56,8 @@ jobs:
         sudo tar xvf toolshed/toolshed-unix*.tgz --strip-components=1 -C /usr/local/bin
         sudo ln -s /bin/bash /usr/local/bin/xroar
 
-    - name: Install Lwtools
+    - if: ${{ steps.cache-lwtools.outputs.cache-hit != 'true' }}
+      name: Install Lwtools
       run: |
         sudo bash ./setup/lwtools.sh
 
