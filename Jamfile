@@ -5,7 +5,7 @@ disk = [ FDirName $(SUBDIR) craigtst.dsk ] ;
 
 ASM = [ Glob $(SUBDIR) : *.asm ] ;
 
-TARGETS = i1.asm i2.asm i3.asm ;
+TARGETS = i1.asm i2.asm i3.asm kbchk.asm ;
 
 DEPS = $(DEP:S=.asm) ;
 
