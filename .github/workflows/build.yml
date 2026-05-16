@@ -44,7 +44,7 @@ jobs:
 
     - name: Install Toolshed
       run: |
-        sudo tar xvf toolshed/toolshed-[0-9]*.*.tgz --strip-components=1 -C /usr/local/bin
+        sudo tar xvf toolshed/toolshed-unix*.tgz --strip-components=1 -C /usr/local/bin
         sudo ln -s /bin/bash /usr/local/bin/xroar
 
     - name: Install Lwtools
