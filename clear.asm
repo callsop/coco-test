@@ -6,19 +6,19 @@
 
 
 cleartop
-	pshs	a,b,x
-	ldd	#$2020
-	ldx	#screen
-.loop   std	,x++
-	cmpx	#screen+8*32
-	bne	.loop
-	puls	a,b,x,pc
+        pshs    a,b,x
+        ldd     #$2020
+        ldx     #screen
+.loop   std     ,x++
+        cmpx    #screen+8*32
+        bne     .loop
+        puls    a,b,x,pc
 
-clear   pshs	a,b,x
-	ldd	#$2020
-	ldx	#screen
-.loop   std	,x++
-	cmpx	#escreen
-	bne	.loop
-	puls	a,b,x,pc
+clear   pshs    a,b,x
+        ldd     #$2020
+        ldx     #screen
+.loop   std     ,x++
+        cmpx    #escreen
+        bne     .loop
+        puls    a,b,x,pc
 

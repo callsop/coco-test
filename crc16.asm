@@ -7,17 +7,17 @@
 * Craig Allsop - 2025/05/20
 **************************************************************************
 
-crc16 	pshs	y
-@top:	eora	,u+
-	ldy	#8
+crc16   pshs    y
+@top:   eora    ,u+
+        ldy     #8
 @loop:  aslb
-	rola
-	bcc	@skip
-	eora	#$10
-	eorb	#$21
-@skip:  leay	-1,y
-	bne	@loop
-	leax	-1,x
-	bne	@top
-	puls	y,pc
+        rola
+        bcc     @skip
+        eora    #$10
+        eorb    #$21
+@skip:  leay    -1,y
+        bne     @loop
+        leax    -1,x
+        bne     @top
+        puls    y,pc
 
