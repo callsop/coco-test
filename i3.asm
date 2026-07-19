@@ -53,17 +53,17 @@ result	fdb	0
 	bne	.msgs
 
 	lda	#60		program initialization
-	sta	count1
-	sta	count2
-	ldx	timer+2
-	stx	timer
+	sta	>count1
+	sta	>count2
+	ldx	>timer+2
+	stx	>timer
 	ldd	#0
-	std	addr1
-	std	addr3
-	std	data
-	std	result
-	std	oldirq
-	std	check
+	std	>addr1
+	std	>addr3
+	std	>data
+	std	>result
+	std	>oldirq
+	std	>check
 
 	ldu	#start		program check
 	ldx	#last-start
@@ -71,14 +71,14 @@ result	fdb	0
 	ldx	#screen+10*32+24
 	lbsr	printhexd
 	lda	#$30		count = 0
-	sta	counter1
-	sta	counter2
-	ldx	$10d
-	stx	oldirq
+	sta	>counter1
+	sta	>counter2
+	ldx	>$10d
+	stx	>oldirq
 	ldx	#intr1
-	stx	$10d		install irq handler
+	stx	>$10d		install irq handler
 	lda	#7
-	sta	$ff03
+	sta	>$ff03
 	clra
 	nop
 	nop
@@ -92,10 +92,10 @@ result	fdb	0
 * start of main program
 *
 
-top	ldy	timer
+top	ldy	>timer
 	leay	-1,y
 	lbeq	finish
-	sty	timer
+	sty	>timer
 	ldx	#screen
 	sta	,x+
 	nop
@@ -114,8 +114,8 @@ top	ldy	timer
 	nop
 	nop
 	andcc	#$ef		enable irq
-	tst	$ff02		reset for next interrupt
-@wait   tst	$ff03		poor mans SYNC (aka Max-10)
+	tst	>$ff02		reset for next interrupt
+@wait   tst	>$ff03		poor mans SYNC (aka Max-10)
 	bpl	@wait		loop if no interrupt yet
 @loop	nop			<- instruction at 4090 - interrupts here
 	nop
@@ -142,21 +142,21 @@ top	ldy	timer
 	std	,x++
 	std	,x++
 	puls	a
-	jmp	top
+	jmp	>top
 
 **************************************************************************
 * interrupt handler
 **************************************************************************
-intr1   dec	count1		decrement count
+intr1   dec	>count1		decrement count
 	bne	.i1
 	lda	#60		reset counter back to 60
-	sta	count1
-	lda	counter1	increment bottom corner every second
+	sta	>count1
+	lda	>counter1	increment bottom corner every second
 	cmpa	#$39
 	bne	.i2
 	lda	#$2f
 .i2	inca
-	sta	counter1
+	sta	>counter1
 .i1	ldd	10,s		write address interrupted at
 	andb	#3
 	ldx	#addr1
@@ -165,7 +165,7 @@ intr1   dec	count1		decrement count
 	ldx	#screen+15*32+1
 	lbsr	printhexd
 	ldx	#intr2		swap to second irq handler
-	stx	$10d		install irq handler
+	stx	>$10d		install irq handler
 	leau	10,s
 	bsr	addchk
 	ldu	#escreen-2
@@ -176,40 +176,40 @@ intr1   dec	count1		decrement count
 	rti			end interrupt handler
 
 
-intr2   dec	count2		decrement count
+intr2   dec	>count2		decrement count
 	bne	.i1
 	lda	#60		reset counter back to 60
-	sta	count2
-	lda	counter2	increment bottom corner every second
+	sta	>count2
+	lda	>counter2	increment bottom corner every second
 	cmpa	#$39
 	bne	.i2
 	lda	#$2f
 .i2	inca
-	sta	counter2
+	sta	>counter2
 .i1	ldd	10,s		write address interrupted at
 	ldx	#screen+15*32+6
 	bsr	printhexd
 	ldx	#intr1		swap to first irq handler
-	stx	$10d		install irq handler
+	stx	>$10d		install irq handler
 	ldx	#top		reset loop to top
 	stx	10,s
 	leau	10,s
 	bsr	addchk
-	lda	$ff02		reset for next interrupt
+	lda	>$ff02		reset for next interrupt
 	rti			end interrupt handler	
 
-addchk	ldd	check
+addchk	ldd	>check
 	ldx	#2
 	bsr	crc16
-	std	check
+	std	>check
 	rts
 
-finish	ldy	oldirq
-	sty	$10d
+finish	ldy	>oldirq
+	sty	>$10d
 	bsr	cleartop
 	ldu	#escreen-2
 	bsr	addchk
-	std	result
+	std	>result
 	ldy	#results
 	ldx	,y++
 	bsr	print
@@ -218,9 +218,9 @@ finish	ldy	oldirq
 	ldy	#tally
 	ldx	,y++
 	bsr	print
-	ldd	addr1
+	ldd	>addr1
 	bsr	printhexd
-	ldd	addr3
+	ldd	>addr3
 	bsr	printhexd
 
 	rts

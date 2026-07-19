@@ -53,15 +53,15 @@ result	fdb	0
 	bne	.msgs
 
 	lda	#60		program initialization
-	sta	count1
-	sta	count2
-	ldx	timer+2
-	stx	timer
+	sta	>count1
+	sta	>count2
+	ldx	>timer+2
+	stx	>timer
 	ldd	#0
-	std	data
-	std	result
-	std	oldirq
-	std	check
+	std	>data
+	std	>result
+	std	>oldirq
+	std	>check
 
 	ldu	#start		program check
 	ldx	#last-start
@@ -69,14 +69,14 @@ result	fdb	0
 	ldx	#screen+10*32+24
 	lbsr	printhexd
 	lda	#$30		count = 0
-	sta	counter1
-	sta	counter2
-	ldx	$10d
-	stx	oldirq
+	sta	>counter1
+	sta	>counter2
+	ldx	>$10d
+	stx	>oldirq
 	ldx	#intr1
-	stx	$10d		install irq handler
+	stx	>$10d		install irq handler
 	lda	#7
-	sta	$ff03
+	sta	>$ff03
 	clra
 	nop
 	nop
@@ -88,17 +88,17 @@ result	fdb	0
 * start of main program
 *
 
-top	ldy	timer
+top	ldy	>timer
 	leay	-1,y
 	lbeq	finish
-	sty	timer
-	tst	$ff02		reset for next interrupt
+	sty	>timer
+	tst	>$ff02		reset for next interrupt
 	ldx	#screen
 	sta	,x+
 	andcc	#$ef		enable irq & push this state
 	pshs	cc
 	orcc	#$50		disable irq while waiting
-@wait   tst	$ff03		poor mans SYNC (aka Max-10)
+@wait   tst	>$ff03		poor mans SYNC (aka Max-10)
 	bpl	@wait		loop if no interrupt yet
 here	mul			interrupt has occurred!
 	mul
@@ -129,7 +129,7 @@ here	mul			interrupt has occurred!
 	nop
 	nop
 	ldy	#intr1		swap to first irq handler
-	sty	$10d		install irq handler
+	sty	>$10d		install irq handler
 	sta	,x+
 	inca
 	cmpx	#screen+8*32
@@ -140,14 +140,14 @@ here	mul			interrupt has occurred!
 	std	,x++
 	std	,x++
 	puls	a
-	jmp	top
+	jmp	>top
 
 	INCLUDE irq.asm
 
-addchk	ldd	check
+addchk	ldd	>check
 	ldx	#2
 	bsr	crc16
-	std	check
+	std	>check
 	rts
 
 	INCLUDE finish.asm

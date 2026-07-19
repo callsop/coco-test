@@ -66,23 +66,23 @@
 SCREEN  equ     $400
 LINE2   equ     SCREEN+32
 LINE4   equ     SCREEN+32*4
-WAIT1   equ     LINE2+5                 ; the wait character pos
-WAIT2   equ     LINE2+6                 ; the 2nd wait character pos
-COUNTER equ     LINE2+15                ; the counter character pos
-SCAN    equ     LINE2+23                ; the keyboard scan
-PRINT   equ     LINE4-1                 ; print position
+WAIT1   equ     LINE2+5         ; the wait character pos
+WAIT2   equ     LINE2+6         ; the 2nd wait character pos
+COUNTER equ     LINE2+15        ; the counter character pos
+SCAN    equ     LINE2+23        ; the keyboard scan
+PRINT   equ     LINE4-1         ; print position
 
-READ    macro                           ; read a keyboard column 
+READ    macro                   ; read a keyboard column 
         rola
-        sta     $ff02
-        ldb     $ff00
+        sta     >$ff02
+        ldb     >$ff00
         stb     ,x+
         endm
 
 
         org     $4000
 start:
-        ldd     #$2020                  ; clear the screen
+        ldd     #$2020          ; clear the screen
         ldx     #SCREEN
 clear:
         std     ,x++
@@ -91,7 +91,7 @@ clear:
 
         ldx     #SCREEN
         ldy     #msg
-showmsg:                                ; show message text
+showmsg:                        ; show message text
         lda     ,y+
         beq     continue
         anda    #~$40
@@ -99,38 +99,38 @@ showmsg:                                ; show message text
         bra     showmsg
 
 continue:
-        lda     #%11000000              ; coco3 mode, mmu, no interrupt to cpu
-        sta     $ff90
-        lda     #2                      ; enable only keyboard interrupt
-        sta     $ff92
+        lda     #%11000000      ; coco3 mode, mmu, no interrupt to cpu
+        sta     >$ff90
+        lda     #2              ; enable only keyboard interrupt
+        sta     >$ff92
 
-        lda     #0                      ; check all keys
-        sta     $ff02
+        lda     #0              ; check all keys
+        sta     >$ff02
 
 top:
-        lda     #'0'                    ; start loop at a zero
-        sta     WAIT1
+        lda     #'0'            ; start loop at a zero
+        sta     >WAIT1
 
-loop:   inc     WAIT1
-        lda     $ff92                   ; wait for keyboard interrupt
+loop:   inc     >WAIT1
+        lda     >$ff92          ; wait for keyboard interrupt
         bne     pressed
         bra     loop
 pressed:
-        inc     COUNTER                 ; count each scan
-        ldx     #SCAN                   ; scan keyboard
+        inc     >COUNTER        ; count each scan
+        ldx     #SCAN           ; scan keyboard
 
-        lda     pressed
-        beq     nopause                 ; if nothing pressed, don't pause
-        jsr     pause                   ; wait (required for a release event, if
-                                        ;       we scan too early we'll read the
-                                        ;       prior pressed state)
+        lda     >pressed
+        beq     nopause         ; if nothing pressed, don't pause
+        jsr     >pause          ; wait (required for a release event, if
+                                ;       we scan too early we'll read the
+                                ;       prior pressed state)
 nopause:
-        clr     ispressed
+        clr     >ispressed
         
-        andcc   #$fe                    ; clear carry
+        andcc   #$fe            ; clear carry
         lda     #$ff
 
-        READ                            ; rola and read keyboard to x
+        READ                    ; rola and read keyboard to x
         READ
         READ
         READ
@@ -139,33 +139,33 @@ nopause:
         READ
         READ
 
-        lda     #' '                    ; show the space while in 2nd loop
-        sta     WAIT1
+        lda     #' '            ; show the space while in 2nd loop
+        sta     >WAIT1
 
-        lda     #'0'                    ; start loop at a zero
-        sta     WAIT2
+        lda     #'0'            ; start loop at a zero
+        sta     >WAIT2
 
-        lda     #0                      ; check all keys
-        sta     $ff02
+        lda     #0              ; check all keys
+        sta     >$ff02
 
-wait:   inc     WAIT2
-        lda     $ff92
-        bne     wait                    ; wait for clear flag (never waits?)
+wait:   inc     >WAIT2
+        lda     >$ff92
+        bne     wait            ; wait for clear flag (never waits?)
 
-        ldx     #SCAN                   ; decode key
+        ldx     #SCAN           ; decode key
         ldy     #table
 print:
         lda     ,x+
         ldb     #7
 @next:
         rora
-        bcs     @nokey                  ; found a key?
-        pshs    d,x                     ; print the key & scroll
+        bcs     @nokey          ; found a key?
+        pshs    d,x             ; print the key & scroll
         lda     ,y
-        sta     PRINT
+        sta     >PRINT
         bsr     scroll
         puls    d,x
-        inc     ispressed               ; something was pressed
+        inc     >ispressed      ; something was pressed
 @nokey:
         leay    1,y
         decb
@@ -175,7 +175,7 @@ print:
         lbra    top
 
 scroll:
-        ldx     #PRINT-29               ; scroll decoded keys left
+        ldx     #PRINT-29       ; scroll decoded keys left
 @loop:
         ldd     ,x+
         std     -2,x
@@ -183,7 +183,7 @@ scroll:
         bne     @loop
         rts
 
-pause:  lda     #20                ; a small pause
+pause:  lda     #20             ; a small pause
 @loop:  deca
         bne     @loop
         rts
@@ -191,6 +191,7 @@ pause:  lda     #20                ; a small pause
 ispressed:
         fcb     0
 msg:    fcn     '  KEYBOARD INTERRUPT TEST 1.04  WAIT[* ] COUNT[0] SCAN[        ]'
+
 
 table:  fcc     '@HPX08e'
         fcc     'AIQY19c'

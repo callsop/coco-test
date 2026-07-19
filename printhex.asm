@@ -21,11 +21,11 @@ printhex
 	andb	#$f
 	addd	#$3030		make ascii
 	cmpa	#$3A		adjust for a-f
-	blt	.hex1
+	blt	@hex1
 	suba	#$39
-.hex1   cmpb	#$3A
-	blt	.hex2
+@hex1   cmpb	#$3A
+	blt	@hex2
 	subb	#$39
-.hex2   std	,x++		print it to screen
+@hex2   std	,x++		print it to screen
 	puls	a,b,pc
 
