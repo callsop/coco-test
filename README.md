@@ -43,6 +43,23 @@ ToDo: Test how often the wait loop while interrupts active in test #3 continue l
 1. Interestingly on test #3 a real CoCo 3 interrupts from address 4090 more often than 4093.
 2. Something is not quite right though because Dungeons of Daggorath zooms though the title screen as if its not vsync'ing and during game play sometimes skips forward very quickly.
 
+---
+
+**MMU1.BIN** - MMU Bit Test #1 (C4A8) - This tests how the upper two bits behave under a couple of scenarios such as how LOADM and PEEK differ. Thus concludes that loading a binary with LOADM can update the MMU registers (and/or palette registers) without problems from these undefined bits. I'm yet to see test #1 (first row) return anything other than OK. A 2MB Coco3 should return OK for all of them, assuming you don't have a cheap memory card. Here is what a 512k Coco3 should do:
+
+<div align="center">
+
+<img src="images/coco3test-mmu1.png" alt="CoCo 3 - I3" style="width:50%; height:auto;">
+
+CoCo 3 - MMU Bit Test
+
+</div>
+
+## Pre-Built DSK
+
+Click on [Releases](https://github.com/callsop/coco-test/releases) to download already built DSK file.
+
+
 ## Building
 
 To build the dsk image require some tools...
