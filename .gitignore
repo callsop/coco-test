@@ -1,0 +1,6 @@
+*.bin
+*.lst
+*.dsk
+*.log
+tmg*
+trace*

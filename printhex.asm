@@ -6,6 +6,10 @@
 * Craig Allsop - 2025/05/20
 **************************************************************************
 
+        ifndef printmask
+printmask equ $40
+        endc
+
 printhexd
         bsr     printhex
         tfr     b,a
@@ -19,13 +23,15 @@ printhex
         lsra
         lsra
         andb    #$f
-        addd    #$3030          make ascii
-        cmpa    #$3A            adjust for a-f
+        addd    #$7070          make ascii
+        cmpa    #$7A            adjust for a-f
         blt     @hex1
         suba    #$39
-@hex1   cmpb    #$3A
+@hex1   cmpb    #$7A
         blt     @hex2
         subb    #$39
-@hex2   std     ,x++            print it to screen
+@hex2   anda    #~printmask
+        andb    #~printmask
+        std     ,x++            print it to screen
         puls    a,b,pc
 

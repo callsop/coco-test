@@ -4,11 +4,11 @@ Just my collection of test programs that are used to verify coco emulation.
 
 Programs:
 
-**I1.BIN** - Interrupt Test #1 (8C4D) - Tests SYNC / IRQ handler. Runs for 10 seconds and checks for proper operation of interrupt handler, interrupted address and number of interrupts. Produces checksum result of A66C.
+**I1.BIN** - Interrupt Test #1 (11F2) - Tests SYNC / IRQ handler. Runs for 10 seconds and checks for proper operation of interrupt handler, interrupted address and number of interrupts. Produces checksum result of A66C.
 
-**I2.BIN** - Interrupt Test #2 (AE33) - Tests interrupt wait loop, interrupts disabled while waiting & IRQ handler. (Similar to Max-10) Similar to above, should produce checksum result of 5886.
+**I2.BIN** - Interrupt Test #2 (08AF) - Tests interrupt wait loop, interrupts disabled while waiting & IRQ handler. (Similar to Max-10) Similar to above, should produce checksum result of 5886.
 
-**I3.BIN** - Interrupt Test #3 (09C8) - Tests interrupt wait loop while interrupts active (enabled) & IRQ handler. (Similar to the game Contras) The results for this test vary because
+**I3.BIN** - Interrupt Test #3 (2168) - Tests interrupt wait loop while interrupts active (enabled) & IRQ handler. (Similar to the game Contras) The results for this test vary because
 interrupts being enabled can happen anywhere but in this test it should only
 occur at address 4090 and 4093. This test will tally up how many for each,
 typical results are TALLY = CA00008E as tested on a real CoCo3.
@@ -36,12 +36,12 @@ ToDo: Test how often the wait loop while interrupts active in test #3 continue l
 | xroar coco3p | 1.8.1   |  Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = BD00009B |
 | VCC      | <2.1.9.1 |   No :x: |  No :x: |  No :x: Tally = 510000DB| 
 | VCC      | 2.1.9.2 | Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = 980000C0 | 
-| trs80gp<sup>2</sup>  | 2.5.4 | Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = B40000A4 | 
+| trs80gp  | 2.5.4 | Pass :heavy_check_mark: | Pass :heavy_check_mark: | Pass :heavy_check_mark: Tally = B40000A4 | 
 | Coco3FPGA  | :grey_question: | :grey_question: | :grey_question: | :grey_question: | 
 | RealCoco3  | :grey_question: | :grey_question: | :grey_question: | :grey_question: | 
 
 1. Interestingly on test #3 a real CoCo 3 interrupts from address 4090 more often than 4093.
-2. Something is not quite right though because Dungeons of Daggorath zooms though the title screen as if its not vsync'ing and during game play sometimes skips forward very quickly.
+
 
 ---
 
@@ -67,8 +67,8 @@ To build the dsk image require some tools...
 ### Requirements
 
 - [Jam 2.6.1](https://github.com/callsop/perforce-jam)
-- [Toolshed 2.4.1](https://github.com/nitros9project/toolshed)
-- [Lwtools 4.24](http://www.lwtools.ca)
+- [Toolshed 2.6.1](https://github.com/nitros9project/toolshed)
+- [Lwtools 4.25](http://www.lwtools.ca)
 
 #### Linux
 
@@ -116,8 +116,8 @@ Clean clean
 
 Either of these can be used:
 
-- xroar 1.8.1
-- vcc 2.1.9.2
+- xroar 1.12
+- vcc 2.1.9.3
 
 ### Launching with xroar
 

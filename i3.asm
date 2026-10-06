@@ -4,8 +4,8 @@
 * Installs an IRQ handler that counts every 60 calls (~ 1 second) and
 * increments a counter in the bottom right corner. Prints the address that
 * the interrupt was called from on bottom left corner. It should happen
-* at address 4090 or 4093 based on this source. The two digits on the bottom
-* corner should be always matching.
+* at address 40A0 or 40A3 based on this source. The two digits on the bottom
+* corner should be matching.
 *
 * This is meant to test emulation, a double interrupt handler isn't a
 * real use case but we can check how compatible emulation is.
@@ -27,12 +27,21 @@
 * The program continuously checksum addresses of the interrupt execution
 * and execute a fixed number of interrupts and print the result at the 
 * end. It should run for only 10 seconds. As interrupts are enabled while
-* waiting, the address will fluctuate giving a random result. It will
-* print the tally of interrupt address, 4090, 91, 92, 93 as hex bytes, 
-* which will look like TALLY = B00000A8 indicating B0 interrupts from 
-* address 4090 and A8 interrupts from address 4093.
+* waiting, the address will fluctuate giving a random result. 
+
 *
-* Craig Allsop, 2025-05-22 - v1.0 - program verification checksum = 09C8
+* Result:
+*
+* It will print the tally of interrupt address, 40A0, A1, A2, A3 as hex bytes, 
+* which will look like TALLY = 8B0000CD indicating 8B interrupts from 
+* address 40A0 and CD interrupts from address 40A3. There is only 2
+* instructions in this loop so there is a chance it will happen from
+* either one (40A0 or 40A3). Shown are 4 lines that should only have either a
+* @ or an C, indicating interrupted from 40A0 or $40A3.
+*
+* Craig Allsop
+* 2025-05-22 - v1.0 - (checksum: 09C8)
+* 2026-09-09 - v1.1 - print a capture of first 128 interrupts (checksum: 2168)
 **************************************************************************
 
         org     $4000
@@ -64,6 +73,8 @@ result  fdb     0
         std     >result
         std     >oldirq
         std     >check
+        ldd     #capture
+        std     >cp
 
         ldu     #start          program check
         ldx     #last-start
@@ -113,11 +124,22 @@ top     ldy     >timer
         nop
         nop
         nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
         andcc   #$ef            enable irq
         tst     >$ff02          reset for next interrupt
-@wait   tst     >$ff03          poor mans SYNC (aka Max-10)
-        bpl     @wait           loop if no interrupt yet
-@loop   nop                     <- instruction at 4090 - interrupts here
+baseadr equ     *
+@wait   tst     >$ff03          poor mans SYNC (aka Max-10) <- instruction at 40A0 - interrupts here
+        bpl     @wait           loop if no interrupt yet    <- instruction at 40A3 - interrupts here
+@loop   nop                     
         nop
         nop
         nop
@@ -158,6 +180,12 @@ intr1   dec     >count1         decrement count
 .i2     inca
         sta     >counter1
 .i1     ldd     10,s            write address interrupted at
+        ldx     >cp
+        cmpx    #capture+256
+        beq     .i3
+        std     ,x++
+        stx     >cp
+.i3
         andb    #3
         ldx     #addr1
         inc     b,x
@@ -192,21 +220,21 @@ intr2   dec     >count2         decrement count
         ldx     #intr1          swap to first irq handler
         stx     >$10d           install irq handler
         ldx     #top            reset loop to top
-        stx     10,s
         leau    10,s
+        stx     10,s
         bsr     addchk
         lda     >$ff02          reset for next interrupt
         rti                     end interrupt handler   
 
 addchk  ldd     >check
         ldx     #2
-        bsr     crc16
+        lbsr    crc16
         std     >check
         rts
 
 finish  ldy     >oldirq
         sty     >$10d
-        bsr     cleartop
+        lbsr    cleartop
         ldu     #escreen-2
         bsr     addchk
         std     >result
@@ -222,6 +250,17 @@ finish  ldy     >oldirq
         bsr     printhexd
         ldd     >addr3
         bsr     printhexd
+
+        ldy     #capture
+        ldx     #screen+2*32
+r1:     ldd     ,y++
+        subd    #baseadr
+        stb     ,x+
+        cmpy    #capture+256
+        bne     r1      
+
+        ldd     #screen+32*8
+        std     >$88
 
         rts
 
@@ -253,12 +292,12 @@ msgs    fdb     screen+1
         fcc     ' <- SHOULD BE ONE @ HERE'
         fcb     0
         fdb     screen+9*32
-        fcc     ' TEST #3 WAIT ACT LOOP IRQ V1.0 '
+        fcc     ' TEST #3 WAIT ACT LOOP IRQ V1.1 '
         fcc     '   CRAIG ALLSOP - 2025 (....)'
         fcb     0
         fdb     screen+12*32
         fcc     '              INTERRUPT ADDRESS '
-        fcc     ' 4090.4090 <- SHOULD MATCH THIS'
+        fcc     ' 40A0.40A0 <- SHOULD MATCH THIS'
         fcb     0
         fdb     screen+15*32
         fcc     '[    .    ]   SECONDS (0-9) ->'
@@ -273,6 +312,8 @@ tally   fdb     screen+1*32
         fcc     'TALLY = '
         fcb     0
 
+cp      fdb     capture        
 last    equ     *
+capture rmb     256
 
         end     start
