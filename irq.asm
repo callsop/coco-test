@@ -14,8 +14,13 @@ intr1   dec     >count1         decrement count
 .i2     inca
         sta     >counter1
 .i1     ldd     10,s            write address interrupted at
-        ldx     #screen+15*32+1
-        bsr     printhexd
+        ldx     >cp
+        cmpx    #capture+256
+        beq     .i3
+        std     ,x++
+        stx     >cp
+.i3     ldx     #screen+15*32+1
+        lbsr    printhexd
         ldx     #intr2          swap to second irq handler
         stx     >$10d           install irq handler
         leau    10,s
@@ -44,8 +49,8 @@ intr2   dec     >count2         decrement count
         ldx     #intr1          swap to first irq handler
         stx     >$10d           install irq handler
         ldx     #top            reset loop to top
-        stx     10,s
         leau    10,s
+        stx     10,s
         bsr     addchk
         lda     >$ff02          reset for next interrupt
         rti                     end interrupt handler   

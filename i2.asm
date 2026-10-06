@@ -16,7 +16,7 @@
 * interrupt flag b7 of ff03. If interrupts are disabled the interrupt
 * line should be active (low) after this point and should be serviced
 * as soon as cpu flag I is unmasked (0), (after puls cc). This should 
-* happen at address 4090.
+* happen at address 40A0.
 *
 * A second interrupt handler is installed to check that emulation correctly
 * calls the second handler when the interrupt acknowledge doesn't happen.
@@ -30,9 +30,16 @@
 * The program continuously checksum addresses of the interrupt execution
 * and execute a fixed number of interrupts and print the result at the 
 * end, any deviation will result in wrong checksum. It should run for
-* only 10 seconds. The result should be 5886 for version v1.0 (AE33).
+* only 10 seconds. 
 *
-* Craig Allsop, 2025-05-19 - v1.0 - program verification checksum = AE33
+* Result:
+*
+* The result should be F3E7 for version v1.1 (08AF), followed by 4 rows
+* of @'s indicating interrupt occurs right after cc was updated.
+*
+* Craig Allsop
+* 2025-05-19 - v1.0 - program verification checksum = AE33
+* 2026-10-06 - v1.1 - print a capture of first 128 interrupts (checksum: 08AF)
 **************************************************************************
 
         org     $4000
@@ -62,6 +69,8 @@ result  fdb     0
         std     >result
         std     >oldirq
         std     >check
+        ldd     #capture
+        std     >cp
 
         ldu     #start          program check
         ldx     #last-start
@@ -112,8 +121,19 @@ here    mul                     interrupt has occurred!
         mul
         mul
         mul
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
         puls    cc              unsuspend interrupt 
-@loop   nop                     <- instruction at 4090 - interrupts here
+baseadr equ     *
+@loop   nop                     <- instruction at 40A0 - interrupts here
         nop
         nop
         nop
@@ -151,6 +171,7 @@ addchk  ldd     >check
         rts
 
         INCLUDE finish.asm
+        rts
 
 **************************************************************************
 
@@ -175,12 +196,12 @@ msgs    fdb     screen+1
         fcc     ' <- SHOULD BE ONE @ HERE'
         fcb     0
         fdb     screen+9*32
-        fcc     '   TEST #2 WAIT LOOP IRQ V1.0   '
+        fcc     '   TEST #2 WAIT LOOP IRQ V1.1   '
         fcc     '   CRAIG ALLSOP - 2025 (....)'
         fcb     0
         fdb     screen+12*32
         fcc     '              INTERRUPT ADDRESS '
-        fcc     ' 4090.4090 <- SHOULD MATCH THIS'
+        fcc     ' 40A0.40A0 <- SHOULD MATCH THIS'
         fcb     0
         fdb     screen+15*32
         fcc     '[    .    ]   SECONDS (0-9) ->'
@@ -190,6 +211,8 @@ msgs    fdb     screen+1
 results fdb     screen
         fcc     'RESULT = '
         fcb     0
+cp      fdb     capture        
 last    equ     *
+capture rmb     256
 
         end     start
